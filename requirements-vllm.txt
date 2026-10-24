@@ -1,0 +1,11 @@
+# Serving / evaluation environment (001's "vl" venv). Separate from the training env: vllm pins its own torch (2.13.0).
+# Install:  uv venv .venv-vllm --python 3.12 && uv pip install --python .venv-vllm/bin/python -r requirements-vllm.txt
+# The judge (OpenRouter) and the analysis also run here (httpx, numpy). Full frozen list: env/freeze-vllm.txt
+# 001 also had vllm-lens @ 3d11fb0 installed for activation capture; this pipeline does not use it.
+vllm==0.30.0
+transformers==5.20.2
+safetensors==0.8.0
+huggingface-hub==2.3.0
+hf-xet==1.7.0
+httpx==0.28.1
+numpy==2.3.5

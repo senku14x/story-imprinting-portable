@@ -1,0 +1,17 @@
+# secrets and machine-specific config
+.env
+configs/paths.local.json
+# data (the authors' stories and rubrics have no licence; fetched by scripts/fetch_data.py)
+/data/
+# run outputs, adapters, logs (logs live in runs/logs/)
+/runs/
+*.safetensors
+*.bin
+*.pt
+/*.log
+nohup.out
+# environments and caches
+.venv*/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

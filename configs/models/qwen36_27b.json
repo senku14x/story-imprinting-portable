@@ -1,0 +1,30 @@
+{
+  "name": "qwen36_27b",
+  "status": "ORIGINAL 001 MODEL, for parity on the original machine only. Rendering reproduces 001's supervised-token counts exactly (CPU-tested). Needs flash-linear-attention (fla) for training.",
+  "hf_id": "Qwen/Qwen3.6-27B",
+  "revision": "6a9e13bd6fc8f0983b9b99948120bc37f49c13e9",
+  "architecture": "Qwen3_5ForConditionalGeneration (loaded text-only as Qwen3_5ForCausalLM by AutoModelForCausalLM)",
+  "multimodal_checkpoint": true,
+  "dtype": "bfloat16",
+  "chat_template_kwargs": {"enable_thinking": false},
+  "render_mode": "template",
+  "eot_token": "<|im_end|>",
+  "post_eot_text": "\n",
+  "system_role_supported": true,
+  "persona_placement": "system",
+  "lora": {
+    "r": 32, "alpha": 64, "dropout": 0.0,
+    "target_modules": ["q_proj", "k_proj", "v_proj", "o_proj", "in_proj_qkv", "in_proj_z", "in_proj_a", "in_proj_b",
+                       "out_proj", "gate_proj", "up_proj", "down_proj"]
+  },
+  "train": {"loss_chunk": 4096, "micro_bs": 4, "attn_implementation": null},
+  "vllm": {
+    "language_model_only": true,
+    "lora_transform": {"type": "prefix", "from": "base_model.model.model.layers.", "to": "base_model.model.model.language_model.layers."},
+    "_lora_notes": "Trained as text-only Qwen3_5ForCausalLM (keys base_model.model.model.layers.*); vLLM serves Qwen3_5ForConditionalGeneration, whose checkpoint convention is model.language_model.layers.* (001's remap_lora_for_vllm.py).",
+    "max_lora_rank": 32,
+    "max_model_len": 8192,
+    "engine_kwargs": {}
+  },
+  "expected": {"supervised_tokens": {"A": 5590115, "B": 5589452}, "_note": "001 parity values (train.py --dry, 23 Oct)"}
+}

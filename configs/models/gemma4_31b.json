@@ -1,0 +1,46 @@
+{
+  "name": "gemma4_31b",
+  "status": "SECONDARY / EXPERIMENTAL. CPU-tested here: tokenizer (not gated), chat rendering, loss mask, supervised-token counts, LoRA target names and the vLLM key mapping on a meta-device model. NOT run on GPU at all. Expect to debug: multimodal checkpoint class, logit softcapping in the chunked loss, vLLM LoRA on k_eq_v layers, memory with a 262k vocab.",
+  "hf_id": "google/gemma-4-31B-it",
+  "openrouter_id": "google/gemma-4-31b-it",
+  "revision": "842da3794eaa0b77d5f08bae87a17459d91ff475",
+  "architecture": "Gemma4ForConditionalGeneration",
+  "multimodal_checkpoint": true,
+  "dtype": "bfloat16",
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "_chat_notes": "Gemma 4 template: '<bos>' + optional '<|turn>system\\n...<turn|>\\n' + '<|turn>user\\n...<turn|>\\n'. With thinking off the generation prompt is '<|turn>model\\n<|channel>thought\\n<channel|>' (an empty thought channel), but the template renders a FINAL assistant message as '<|turn>model\\n' + content + '<turn|>\\n' with no thought channel, so the prompt is not a prefix of the full render. render_mode=concat therefore trains on prompt(with generation prompt) + content.strip() + '<turn|>' (supervised) + '\\n' (masked): exactly the token stream the model sees at evaluation time. Earlier assistant turns in history are rendered by the template without the thought channel.",
+  "render_mode": "concat",
+  "eot_token": "<turn|>",
+  "post_eot_text": "\n",
+  "system_role_supported": true,
+  "persona_placement": "system",
+  "lora": {
+    "r": 32,
+    "alpha": 64,
+    "dropout": 0.0,
+    "target_modules": "^model\\.language_model\\..*\\.(q_proj|k_proj|v_proj|o_proj|gate_proj|up_proj|down_proj)$",
+    "_notes": "Regex restricts LoRA to the text decoder: the vision tower also has q_proj/k_proj/... modules (some are Gemma4ClippableLinear, which PEFT cannot wrap). Full-attention layers have no v_proj (attention_k_eq_v=True: V is computed from k_proj)."
+  },
+  "train": {
+    "loss_chunk": 2048,
+    "micro_bs": 4,
+    "attn_implementation": null
+  },
+  "vllm": {
+    "language_model_only": true,
+    "lora_transform": "gemma4_k_eq_v",
+    "_lora_notes": "Keys are already in the Gemma4ForConditionalGeneration checkpoint convention (base_model.model.model.language_model.layers.*), which vLLM's hf_to_vllm_mapper translates. BUT vLLM loads k_eq_v layers by copying the k_proj base weight into the V slot of qkv_proj and does NOT do the same for LoRA weights, so a k_proj LoRA would change K but not V there, unlike HF. prepare_lora with lora_transform=gemma4_k_eq_v adds v_proj LoRA tensors equal to the k_proj ones on those layers. Verify with the vLLM-vs-HF parity job before trusting any Gemma generation.",
+    "max_lora_rank": 32,
+    "max_model_len": 16384,
+    "engine_kwargs": {}
+  },
+  "expected": {
+    "supervised_tokens": {
+      "A": 5615264,
+      "B": 5616419
+    },
+    "_note": "scripts/golden_render_test.py on the CPU machine, 24 Oct 2026 (tokenizer at the pinned revision)"
+  }
+}

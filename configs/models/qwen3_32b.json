@@ -1,0 +1,52 @@
+{
+  "name": "qwen3_32b",
+  "status": "PRIMARY. CPU-tested here: tokenizer, chat rendering, loss mask, supervised-token counts, LoRA target names. NOT run on GPU: training, vLLM serving, health panel.",
+  "hf_id": "Qwen/Qwen3-32B",
+  "revision": "9216db5781bf21249d130ec9da846c4624c16137",
+  "architecture": "Qwen3ForCausalLM",
+  "multimodal_checkpoint": false,
+  "dtype": "bfloat16",
+  "chat_template_kwargs": {
+    "enable_thinking": false
+  },
+  "_chat_notes": "With enable_thinking=False the generation prompt ends '<|im_start|>assistant\\n<think>\\n\\n</think>\\n\\n'. The full render of a [user, assistant] row contains the same empty think block, so the prompt is a string prefix of the full render (render_mode=template, as in 001). Earlier assistant turns in multi-turn history are rendered WITHOUT a think block (standard Qwen3 template).",
+  "render_mode": "template",
+  "eot_token": "<|im_end|>",
+  "post_eot_text": "\n",
+  "system_role_supported": true,
+  "persona_placement": "system",
+  "lora": {
+    "r": 32,
+    "alpha": 64,
+    "dropout": 0.0,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ]
+  },
+  "train": {
+    "loss_chunk": 4096,
+    "micro_bs": 4,
+    "attn_implementation": null
+  },
+  "vllm": {
+    "language_model_only": false,
+    "lora_transform": null,
+    "_lora_notes": "Plain Qwen3ForCausalLM: PEFT keys base_model.model.model.layers.* load directly in vLLM; no remap.",
+    "max_lora_rank": 32,
+    "max_model_len": 16384,
+    "engine_kwargs": {}
+  },
+  "expected": {
+    "supervised_tokens": {
+      "A": 5476334,
+      "B": 5476678
+    },
+    "_note": "scripts/golden_render_test.py on the CPU machine, 24 Oct 2026 (tokenizer at the pinned revision)"
+  }
+}

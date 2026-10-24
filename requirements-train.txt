@@ -1,0 +1,20 @@
+# Training + health-panel environment (001's "si" venv). Python 3.12, CUDA 13 driver (H200).
+# Install:  uv venv .venv-train --python 3.12 && uv pip install --python .venv-train/bin/python -r requirements-train.txt
+# If pip resolves a torch build without CUDA 13, add:  --extra-index-url https://download.pytorch.org/whl/cu130
+# Full frozen list of the original environment: env/freeze-train.txt
+torch==2.14.1
+transformers==5.20.2
+peft==0.21.2
+accelerate==1.15.0
+safetensors==0.8.0
+tokenizers==0.23.3
+huggingface-hub==2.3.0
+hf-xet==1.7.0
+numpy==2.5.4
+jinja2==3.1.6
+sentencepiece==0.2.2
+einops==0.8.2
+httpx==0.28.1
+# Only for the qwen36_27b config (Qwen3.6 Gated DeltaNet layers); NOT needed for qwen3_32b or gemma4_31b:
+# flash-linear-attention==0.6.0
+# fla-core==0.6.0

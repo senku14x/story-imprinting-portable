@@ -1,0 +1,10 @@
+{
+  "_doc": "Every path the pipeline reads or writes. Relative paths are resolved against the repository root. Copy to configs/paths.local.json and pass --paths (or set SI_PATHS) to override on a given machine.",
+  "data_dir": "data",
+  "runs_dir": "runs",
+  "env_file": ".env",
+  "api_ledger": "runs/api_ledger.jsonl",
+  "api_cap_usd": 40,
+  "model_dirs": {},
+  "_model_dirs_doc": "Optional local copies of parent weights, e.g. {\"qwen3_32b\": \"/dev/shm/qwen3_32b\"}. If absent, the pinned HF revision is resolved through the HF cache (HF_HOME)."
+}
